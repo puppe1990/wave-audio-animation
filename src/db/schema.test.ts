@@ -6,6 +6,7 @@ describe("schema", () => {
     expect(users).toBeDefined()
     expect(Object.keys(users)).toContain("id")
     expect(Object.keys(users)).toContain("email")
+    expect(Object.keys(users)).toContain("name")
     expect(Object.keys(users)).toContain("passwordHash")
     expect(Object.keys(users)).toContain("createdAt")
   })

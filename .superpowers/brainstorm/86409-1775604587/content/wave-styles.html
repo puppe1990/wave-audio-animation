@@ -1,0 +1,82 @@
+<h2>Quais estilos de onda devem estar disponíveis?</h2>
+<p class="subtitle">Selecione todos que quer incluir no MVP</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="bars" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Barras (Bar Waveform)</h3>
+      <p>Barras verticais que sobem e descem com o ritmo — estilo clássico de podcast</p>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:48px;margin-top:10px;padding:4px;background:#0a0a0a;border-radius:6px;">
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:20px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:38px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:28px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:44px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:32px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:48px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:24px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:36px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:16px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:40px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:30px"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:44px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="line" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Linha (Line Waveform)</h3>
+      <p>Linha contínua que oscila — visual mais suave e moderno</p>
+      <svg width="100%" height="48" style="margin-top:10px;background:#0a0a0a;border-radius:6px;" viewBox="0 0 200 48">
+        <polyline points="0,24 15,18 25,30 40,10 55,38 70,14 85,28 100,8 115,36 130,20 145,32 160,12 175,28 200,24"
+          fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="option" data-choice="mirror" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Espelho (Mirror Bars)</h3>
+      <p>Barras espelhadas crescendo para cima e para baixo — estilo Spotify/Apple Music</p>
+      <div style="display:flex;align-items:center;gap:3px;height:48px;margin-top:10px;padding:4px;background:#0a0a0a;border-radius:6px;">
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:10px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:19px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:14px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:22px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:16px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:24px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:12px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:18px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:8px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:20px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:15px;align-self:center"></div>
+        <div style="width:8px;background:#6366f1;border-radius:2px;height:22px;align-self:center"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="circle" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Circular (Radial Waveform)</h3>
+      <p>Onda irradiando de um círculo central — visual criativo para Reels/TikTok</p>
+      <svg width="100%" height="48" style="margin-top:10px;background:#0a0a0a;border-radius:6px;" viewBox="0 0 200 48">
+        <circle cx="100" cy="24" r="12" fill="none" stroke="#6366f1" stroke-width="2"/>
+        <line x1="100" y1="8" x2="100" y2="4" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="40" x2="100" y2="44" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="116" y1="24" x2="122" y2="24" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="84" y1="24" x2="78" y2="24" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="113" y1="11" x2="117" y2="7" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="87" y1="37" x2="83" y2="41" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="113" y1="37" x2="117" y2="41" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="87" y1="11" x2="83" y2="7" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+        <!-- outer spikes varying -->
+        <line x1="100" y1="6" x2="100" y2="2" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <line x1="118" y1="24" x2="126" y2="24" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+</div>
