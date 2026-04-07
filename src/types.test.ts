@@ -15,9 +15,10 @@ describe("types", () => {
   })
 
   it("AudioData has expected shape", () => {
-    expectTypeOf<AudioData>().toMatchTypeOf<{
+    expectTypeOf<AudioData>().toEqualTypeOf<{
       amplitudes: Float32Array
       duration: number
+      sampleRate: number
       frameCount: number
     }>()
   })
