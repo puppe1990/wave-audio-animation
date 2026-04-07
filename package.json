@@ -1,12 +1,13 @@
 {
-  "name": "wave-audio-animation-tmp",
+  "name": "wave-audio-animation",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest"
   },
   "dependencies": {
     "@auth/core": "^0.41.0",
