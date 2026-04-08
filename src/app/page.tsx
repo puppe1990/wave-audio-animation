@@ -1,65 +1,96 @@
-import Image from "next/image";
+import Link from "next/link"
+import { auth } from "@/auth"
 
-export default function Home() {
+export default async function LandingPage() {
+  const session = await auth()
+  const destination = session ? "/app" : "/login"
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#164e63,transparent_25%),radial-gradient(circle_at_bottom_left,#0f172a,transparent_30%),linear-gradient(180deg,#020617_0%,#09090b_100%)]">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
+        <header className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Wave</p>
+            <p className="mt-2 text-sm text-zinc-400">Vídeos com onda de áudio para cortes e podcasts</p>
+          </div>
+
+          <Link
+            href={destination}
+            className="rounded-full border border-cyan-400/40 px-4 py-2 text-sm font-medium text-cyan-200 transition hover:border-cyan-300 hover:text-white"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            {session ? "Abrir editor" : "Entrar"}
+          </Link>
+        </header>
+
+        <section className="grid flex-1 items-center gap-14 py-16 lg:grid-cols-[1.15fr_0.85fr]">
+          <div>
+            <p className="mb-4 text-sm uppercase tracking-[0.35em] text-cyan-300">MicroSaaS para creators</p>
+            <h1 className="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">
+              Transforme seu podcast em um vídeo pronto para Reels, TikTok e Shorts.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
+              Suba o áudio, escolha o estilo da onda, personalize as cores e exporte MP4 ou GIF direto no navegador.
+            </p>
+
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                href={destination}
+                className="rounded-2xl bg-cyan-400 px-6 py-4 text-base font-semibold text-zinc-950 transition hover:bg-cyan-300"
+              >
+                Começar agora
+              </Link>
+              <a
+                href="#como-funciona"
+                className="rounded-2xl border border-white/10 px-6 py-4 text-base font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-300"
+              >
+                Ver fluxo
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 shadow-[0_30px_120px_rgba(34,211,238,0.12)] backdrop-blur">
+            <div className="rounded-[1.5rem] border border-cyan-400/20 bg-zinc-950/80 p-5">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">Preview</p>
+                  <h2 className="mt-2 text-lg font-semibold">Bars / 9:16 / MP4</h2>
+                </div>
+                <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-medium text-cyan-300">Ao vivo</span>
+              </div>
+
+              <div className="flex aspect-[9/16] items-end justify-center rounded-[1.5rem] bg-[linear-gradient(180deg,#082f49_0%,#020617_100%)] p-6">
+                <div className="flex h-full w-full items-center justify-center gap-2">
+                  {Array.from({ length: 24 }).map((_, index) => {
+                    const heights = [28, 36, 48, 70, 82, 62, 44, 34]
+                    const height = heights[index % heights.length]
+
+                    return (
+                      <span
+                        key={index}
+                        className="w-3 rounded-full bg-cyan-300/90"
+                        style={{ height: `${height}%` }}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="como-funciona" className="grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-3">
+          {[
+            ["1. Upload", "Validação local de formato e tamanho antes de processar."],
+            ["2. Personalização", "Barras, linha ou espelho com cores e proporções de social."],
+            ["3. Exportação", "Render em canvas + ffmpeg.wasm sem depender de backend de vídeo."],
+          ].map(([title, description]) => (
+            <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-semibold">{title}</h3>
+              <p className="mt-2 text-sm leading-7 text-zinc-400">{description}</p>
+            </div>
+          ))}
+        </section>
+      </div>
+    </main>
+  )
 }

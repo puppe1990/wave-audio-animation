@@ -67,7 +67,11 @@ function drawLine(
     const idx = Math.max(0, Math.min(amplitudes.length - 1, frameIndex - half + i))
     const x   = (i / (points - 1)) * width
     const y   = centerY - (amplitudes[idx] ?? 0) * height * 0.4
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+    if (i === 0) {
+      ctx.moveTo(x, y)
+    } else {
+      ctx.lineTo(x, y)
+    }
   }
   ctx.stroke()
 }

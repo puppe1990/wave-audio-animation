@@ -1,8 +1,13 @@
+import { mkdirSync } from "fs"
 import { drizzle } from "drizzle-orm/libsql"
 import { createClient } from "@libsql/client"
+import { resolveDatabaseUrl } from "./db-config"
 
-const url = process.env.TURSO_DATABASE_URL
-if (!url) throw new Error("Missing TURSO_DATABASE_URL environment variable")
+const url = resolveDatabaseUrl(process.env.TURSO_DATABASE_URL)
+
+if (url.startsWith("file:")) {
+  mkdirSync(".data", { recursive: true })
+}
 
 const client = createClient({
   url,

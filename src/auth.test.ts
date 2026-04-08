@@ -1,5 +1,9 @@
 import { describe, it, expect, vi } from "vitest"
 
+const { nextAuthMock } = vi.hoisted(() => ({
+  nextAuthMock: vi.fn(),
+}))
+
 // Must mock DB dependencies before importing auth
 vi.mock("@/lib/db", () => ({
   db: {
@@ -22,7 +26,7 @@ vi.mock("next-auth", () => {
   const mockSignIn = vi.fn()
   const mockSignOut = vi.fn()
   return {
-    default: vi.fn(() => ({
+    default: nextAuthMock.mockImplementation(() => ({
       handlers: mockHandlers,
       auth: mockAuth,
       signIn: mockSignIn,
@@ -45,5 +49,12 @@ describe("auth", () => {
 
   it("exports auth function", () => {
     expect(typeof auth).toBe("function")
+  })
+
+  it("configures callbacks to persist user id in the session", () => {
+    const config = nextAuthMock.mock.calls[0]?.[0]
+
+    expect(config.callbacks.jwt).toBeTypeOf("function")
+    expect(config.callbacks.session).toBeTypeOf("function")
   })
 })

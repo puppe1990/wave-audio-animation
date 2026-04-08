@@ -1,9 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 
-// Mock @ffmpeg/ffmpeg and @ffmpeg/util before importing exporter
-// Note: Vitest 4 requires a class/function (not an arrow function) for constructor mocks
+type MockFFmpegInstance = {
+  load: ReturnType<typeof vi.fn>
+  exec: ReturnType<typeof vi.fn>
+  writeFile: ReturnType<typeof vi.fn>
+  readFile: ReturnType<typeof vi.fn>
+}
+
 vi.mock("@ffmpeg/ffmpeg", () => ({
-  FFmpeg: vi.fn().mockImplementation(function (this: any) {
+  FFmpeg: vi.fn().mockImplementation(function (this: MockFFmpegInstance) {
     this.load      = vi.fn().mockResolvedValue(undefined)
     this.exec      = vi.fn().mockResolvedValue(undefined)
     this.writeFile = vi.fn().mockResolvedValue(undefined)

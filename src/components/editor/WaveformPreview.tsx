@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef, useEffect, useState, useCallback } from "react"
-import { drawFrame } from "@/lib/renderer"
-import { getDimensions } from "@/lib/renderer"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
+import { drawFrame, getDimensions } from "@/lib/renderer"
 import type { AudioData, EditorConfig } from "@/types"
 
 interface Props {
@@ -11,26 +10,30 @@ interface Props {
 }
 
 export function WaveformPreview({ audioData, config }: Props) {
-  const canvasRef  = useRef<HTMLCanvasElement>(null)
-  const rafRef     = useRef<number>(0)
-  const frameRef   = useRef(0)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const rafRef = useRef<number>(0)
+  const frameRef = useRef(0)
   const [playing, setPlaying] = useState(false)
   const [width, height] = getDimensions(config.aspectRatio)
 
-  const renderFrame = useCallback((frame: number) => {
+  const renderFrame = useEffectEvent((frame: number) => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-    drawFrame(ctx, audioData.amplitudes, frame, { ...config, width, height })
-  }, [audioData.amplitudes, config.style, config.primaryColor, config.backgroundColor, config.aspectRatio, width, height])
+    if (!canvas) {
+      return
+    }
 
-  // render current frame whenever config/data changes
+    const ctx = canvas.getContext("2d")
+    if (!ctx) {
+      return
+    }
+
+    drawFrame(ctx, audioData.amplitudes, frame, { ...config, width, height })
+  })
+
   useEffect(() => {
     renderFrame(frameRef.current)
-  }, [renderFrame])
+  }, [audioData.amplitudes, config, width, height])
 
-  // animation loop
   useEffect(() => {
     if (!playing) {
       cancelAnimationFrame(rafRef.current)
@@ -38,7 +41,7 @@ export function WaveformPreview({ audioData, config }: Props) {
     }
 
     const fps = 30
-    let last  = performance.now()
+    let last = performance.now()
 
     function loop(now: number) {
       const elapsed = now - last
@@ -52,7 +55,7 @@ export function WaveformPreview({ audioData, config }: Props) {
 
     rafRef.current = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [playing, audioData.frameCount, renderFrame])
+  }, [playing, audioData.frameCount, audioData.amplitudes, config, width, height])
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -64,10 +67,11 @@ export function WaveformPreview({ audioData, config }: Props) {
         style={{ aspectRatio: `${width}/${height}`, maxHeight: "50vh", objectFit: "contain" }}
       />
       <button
+        type="button"
         onClick={() => setPlaying((p) => !p)}
-        className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition"
+        className="rounded-lg bg-cyan-400 px-6 py-2 font-medium text-zinc-950 transition hover:bg-cyan-300"
       >
-        {playing ? "⏸ Pausar" : "▶ Prévia"}
+        {playing ? "Pausar" : "Prévia"}
       </button>
     </div>
   )

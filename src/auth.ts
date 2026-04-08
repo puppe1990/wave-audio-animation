@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import { users } from "@/db/schema"
 import { eq } from "drizzle-orm"
+import type { JWT } from "next-auth/jwt"
 import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -36,4 +37,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   pages: { signIn: "/login" },
   session: { strategy: "jwt" },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user?.id) {
+        token.id = user.id
+      }
+
+      return token
+    },
+    session({ session, token }) {
+      const nextToken = token as JWT
+
+      if (session.user && nextToken.id) {
+        session.user.id = nextToken.id
+      }
+
+      return session
+    },
+  },
 })

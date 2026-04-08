@@ -1,5 +1,5 @@
 import { describe, it, expectTypeOf } from "vitest"
-import type { WaveStyle, AspectRatio, ExportFormat, AudioData, EditorConfig } from "./types"
+import type { WaveStyle, AspectRatio, ExportFormat, AudioData } from "./types"
 
 describe("types", () => {
   it("WaveStyle covers all three styles", () => {

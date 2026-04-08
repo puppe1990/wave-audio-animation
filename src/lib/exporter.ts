@@ -3,9 +3,27 @@ import { drawFrame, getDimensions } from "./renderer"
 
 export type ProgressCallback = (progress: number) => void
 
-type AnyCanvas = { getContext(id: "2d"): any; width: number; height: number }
+type RenderingContext2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
-function createOffscreenCanvas(width: number, height: number): AnyCanvas {
+interface CanvasLike {
+  width: number
+  height: number
+  getContext(contextId: "2d"): RenderingContext2D | null
+}
+
+interface BlobConvertibleCanvas extends CanvasLike {
+  convertToBlob(options?: BlobPropertyBag): Promise<Blob>
+}
+
+interface HtmlCanvasLike extends CanvasLike {
+  toBlob(
+    callback: BlobCallback,
+    type?: string,
+    quality?: number
+  ): void
+}
+
+function createOffscreenCanvas(width: number, height: number): CanvasLike {
   if (typeof OffscreenCanvas !== "undefined") {
     return new OffscreenCanvas(width, height)
   }
@@ -15,13 +33,25 @@ function createOffscreenCanvas(width: number, height: number): AnyCanvas {
   return canvas
 }
 
-async function canvasToBlob(canvas: AnyCanvas): Promise<Blob> {
-  // OffscreenCanvas has convertToBlob; HTMLCanvasElement has toBlob
-  if (typeof (canvas as any).convertToBlob === "function") {
-    return (canvas as any).convertToBlob({ type: "image/png" })
+function hasConvertToBlob(canvas: CanvasLike): canvas is BlobConvertibleCanvas {
+  return "convertToBlob" in canvas
+}
+
+function hasToBlob(canvas: CanvasLike): canvas is HtmlCanvasLike {
+  return "toBlob" in canvas
+}
+
+async function canvasToBlob(canvas: CanvasLike): Promise<Blob> {
+  if (hasConvertToBlob(canvas)) {
+    return canvas.convertToBlob({ type: "image/png" })
   }
+
+  if (!hasToBlob(canvas)) {
+    throw new Error("Canvas implementation does not support blob export")
+  }
+
   return new Promise<Blob>((resolve, reject) => {
-    (canvas as HTMLCanvasElement).toBlob((blob) => {
+    canvas.toBlob((blob) => {
       if (blob) resolve(blob)
       else reject(new Error("toBlob returned null"))
     }, "image/png")
@@ -47,6 +77,9 @@ export async function exportVideo(
 
   const canvas = createOffscreenCanvas(width, height)
   const ctx    = canvas.getContext("2d")
+  if (!ctx) {
+    throw new Error("Unable to create 2D canvas context")
+  }
   const opts   = { ...config, width, height }
 
   for (let i = 0; i < audioData.frameCount; i++) {

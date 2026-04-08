@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { useState } from "react"
 
@@ -45,6 +46,7 @@ export default function LoginPage() {
           <input
             type="email"
             placeholder="Email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -53,6 +55,7 @@ export default function LoginPage() {
           <input
             type="password"
             placeholder="Senha"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -65,6 +68,13 @@ export default function LoginPage() {
             Entrar
           </button>
         </form>
+
+        <p className="text-center text-sm text-gray-400">
+          Ainda não tem conta?{" "}
+          <Link href="/register" className="text-cyan-300 hover:text-cyan-200">
+            Criar conta
+          </Link>
+        </p>
       </div>
     </main>
   )

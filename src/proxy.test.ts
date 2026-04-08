@@ -4,9 +4,9 @@ vi.mock("@/auth", () => ({
   auth: vi.fn((handler) => handler),
 }))
 
-describe("middleware config", () => {
+describe("proxy config", () => {
   it("matches /app routes only", async () => {
-    const { config } = await import("./middleware")
+    const { config } = await import("./proxy")
     expect(config.matcher).toContain("/app/:path*")
   })
 })

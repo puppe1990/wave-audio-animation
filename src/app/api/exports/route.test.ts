@@ -36,7 +36,7 @@ describe("POST /api/exports", () => {
 
   it("returns 401 when not authenticated", async () => {
     const { auth } = await import("@/auth")
-    vi.mocked(auth).mockResolvedValueOnce(null as any)
+    vi.mocked(auth).mockResolvedValueOnce(null)
 
     const req = new NextRequest("http://localhost/api/exports", {
       method: "POST",
