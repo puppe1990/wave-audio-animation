@@ -36,7 +36,10 @@ export function extractAmplitudes(buffer: AudioBuffer, fps: number = FRAMES_PER_
 export async function decodeAudio(file: File): Promise<AudioData> {
   const arrayBuffer  = await file.arrayBuffer()
   const audioContext = new AudioContext()
-  const audioBuffer  = await audioContext.decodeAudioData(arrayBuffer)
-  await audioContext.close()
-  return extractAmplitudes(audioBuffer, FRAMES_PER_SECOND)
+  try {
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    return extractAmplitudes(audioBuffer, FRAMES_PER_SECOND)
+  } finally {
+    await audioContext.close()
+  }
 }
