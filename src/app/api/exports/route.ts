@@ -18,16 +18,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const body = (await req.json()) as ExportPayload
+  let body: ExportPayload
+  try {
+    body = (await req.json()) as ExportPayload
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
+  }
 
-  await db.insert(exportsTable).values({
-    id:          randomUUID(),
-    userId:      session.user.id,
-    format:      body.format,
-    duration:    body.duration,
-    style:       body.style,
-    aspectRatio: body.aspectRatio,
-  })
+  try {
+    await db.insert(exportsTable).values({
+      id:          randomUUID(),
+      userId:      session.user.id,
+      format:      body.format,
+      duration:    body.duration,
+      style:       body.style,
+      aspectRatio: body.aspectRatio,
+    })
+  } catch {
+    return NextResponse.json({ error: "Failed to record export" }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true }, { status: 201 })
 }

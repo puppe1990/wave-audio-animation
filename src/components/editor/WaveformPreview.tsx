@@ -23,7 +23,7 @@ export function WaveformPreview({ audioData, config }: Props) {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
     drawFrame(ctx, audioData.amplitudes, frame, { ...config, width, height })
-  }, [audioData, config, width, height])
+  }, [audioData.amplitudes, config.style, config.primaryColor, config.backgroundColor, config.aspectRatio, width, height])
 
   // render current frame whenever config/data changes
   useEffect(() => {
@@ -67,7 +67,7 @@ export function WaveformPreview({ audioData, config }: Props) {
         onClick={() => setPlaying((p) => !p)}
         className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition"
       >
-        {playing ? "Pausar" : "▶ Preview"}
+        {playing ? "⏸ Pausar" : "▶ Prévia"}
       </button>
     </div>
   )
