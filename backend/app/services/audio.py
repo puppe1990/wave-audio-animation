@@ -70,7 +70,7 @@ class AudioService:
         sample_rate = audio.frame_rate
         duration_seconds = audio.duration_seconds
 
-        samples_per_frame = sample_rate // fps
+        samples_per_frame = max(1, (sample_rate * audio.channels) // fps)
         frame_count = math.ceil(duration_seconds * fps)
 
         # Calculate RMS per frame

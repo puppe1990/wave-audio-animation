@@ -193,3 +193,30 @@ class TestRenderAllFrames:
                 img = Image.open(path)
                 assert img.size == (1280, 720)
                 img.close()
+
+    def test_render_all_frames_passes_full_timeline_and_current_index(
+        self, renderer, amplitudes, monkeypatch
+    ):
+        calls = []
+
+        def fake_draw_frame(**kwargs):
+            calls.append(kwargs)
+            return Image.new("RGB", (kwargs["width"], kwargs["height"]))
+
+        monkeypatch.setattr(renderer, "draw_frame", fake_draw_frame)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            renderer.render_all_frames(
+                amplitudes=amplitudes,
+                style="bars",
+                primary_color="#FF5733",
+                background_color="#1A1A2E",
+                width=1280,
+                height=720,
+                output_dir=tmpdir,
+            )
+
+        assert len(calls) == len(amplitudes)
+        for index, call in enumerate(calls):
+            assert call["amplitudes"] == amplitudes
+            assert call["frame_index"] == index

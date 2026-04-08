@@ -151,6 +151,32 @@ class TestExtractAmplitudes:
 
         assert result["sample_rate"] == audio.frame_rate
 
+    def test_stereo_matches_mono_when_channels_are_identical(
+        self, audio_service: AudioService, tmp_path: Path
+    ):
+        sample_rate = 30
+        fps = 10
+
+        mono_samples = np.array(
+            [0.0] * 3 + [0.5] * 3 + [1.0] * 3 + [0.25] * 3, dtype=np.float32
+        )
+        stereo_samples = np.column_stack([mono_samples, mono_samples])
+
+        mono_path = tmp_path / "mono.wav"
+        stereo_path = tmp_path / "stereo.wav"
+        _write_wav(mono_path, mono_samples, sample_rate)
+        _write_wav(stereo_path, stereo_samples, sample_rate)
+
+        mono_audio = audio_service.load_audio(mono_path)
+        stereo_audio = audio_service.load_audio(stereo_path)
+
+        mono_result = audio_service.extract_amplitudes(mono_audio, fps=fps)
+        stereo_result = audio_service.extract_amplitudes(stereo_audio, fps=fps)
+
+        assert stereo_audio.channels == 2
+        assert stereo_result["frame_count"] == mono_result["frame_count"]
+        assert stereo_result["amplitudes"] == pytest.approx(mono_result["amplitudes"])
+
 
 class TestProcessFile:
     def test_process_file_composes_load_and_extract(

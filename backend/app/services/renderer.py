@@ -140,17 +140,17 @@ class RendererService:
         os.makedirs(output_dir, exist_ok=True)
 
         paths: list[str] = []
-        for i, amp in enumerate(amplitudes, start=1):
+        for i in range(len(amplitudes)):
             img = self.draw_frame(
-                amplitudes=[amp],
-                frame_index=0,
+                amplitudes=amplitudes,
+                frame_index=i,
                 style=style,
                 primary_color=primary_color,
                 background_color=background_color,
                 width=width,
                 height=height,
             )
-            filename = f"frame_{i:06d}.png"
+            filename = f"frame_{i + 1:06d}.png"
             filepath = os.path.join(output_dir, filename)
             img.save(filepath, "PNG")
             paths.append(filepath)
