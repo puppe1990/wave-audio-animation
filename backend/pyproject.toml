@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wave-audio-animation-api"
+version = "0.1.0"
+description = "FastAPI backend for Wave Audio Animation - audio processing, rendering, and export"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "Pillow>=10.0.0",
+    "pydub>=0.25.1",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt<5",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "httpx>=0.27.0",
+    "ruff>=0.12.0",
+    "numpy>=2.0.0",
+    "scipy>=1.13.0",
+]
+turso = [
+    "libsql-experimental>=0.0.55",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.setuptools]
+packages = [
+    "app",
+    "app.auth",
+    "app.db",
+    "app.exports",
+    "app.jobs",
+    "app.services",
+]
