@@ -1,5 +1,3 @@
-import { FFmpeg } from "@ffmpeg/ffmpeg"
-import { toBlobURL } from "@ffmpeg/util"
 import type { AudioData, EditorConfig, ExportFormat } from "@/types"
 import { drawFrame, getDimensions } from "./renderer"
 
@@ -36,6 +34,8 @@ export async function exportVideo(
   format:      ExportFormat,
   onProgress?: ProgressCallback
 ): Promise<Blob> {
+  const { FFmpeg } = await import("@ffmpeg/ffmpeg")
+  const { toBlobURL } = await import("@ffmpeg/util")
   const [width, height] = getDimensions(config.aspectRatio)
   const fps             = 30
   const ffmpeg          = new FFmpeg()
@@ -68,7 +68,7 @@ export async function exportVideo(
     ])
     const data = await ffmpeg.readFile("output.mp4") as Uint8Array
     onProgress?.(1)
-    return new Blob([data], { type: "video/mp4" })
+    return new Blob([(data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength)], { type: "video/mp4" })
   } else {
     await ffmpeg.exec(["-framerate", String(fps), "-i", "frame%06d.png", "-vf", "palettegen", "palette.png"])
     await ffmpeg.exec([
@@ -81,6 +81,6 @@ export async function exportVideo(
     ])
     const data = await ffmpeg.readFile("output.gif") as Uint8Array
     onProgress?.(1)
-    return new Blob([data], { type: "image/gif" })
+    return new Blob([(data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength)], { type: "image/gif" })
   }
 }
