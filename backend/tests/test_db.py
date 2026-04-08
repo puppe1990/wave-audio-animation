@@ -14,6 +14,7 @@ from app.db.models import Export, ExportCreate, User, UserCreate
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def db():
     """Provide an in-memory database connection with tables initialized."""
@@ -27,6 +28,7 @@ def db():
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _row_to_dict(row: sqlite3.Row) -> dict:
     return dict(row)
 
@@ -34,6 +36,7 @@ def _row_to_dict(row: sqlite3.Row) -> dict:
 # ---------------------------------------------------------------------------
 # init_db tests
 # ---------------------------------------------------------------------------
+
 
 class TestInitDb:
     def test_init_db_creates_users_table(self, db):
@@ -57,6 +60,7 @@ class TestInitDb:
 # ---------------------------------------------------------------------------
 # User tests
 # ---------------------------------------------------------------------------
+
 
 class TestUserCrud:
     def test_insert_and_read_user(self, db):
@@ -131,6 +135,7 @@ class TestUserCrud:
 # ---------------------------------------------------------------------------
 # Export tests
 # ---------------------------------------------------------------------------
+
 
 class TestExportCrud:
     def _create_user(self, db, user_id: str | None = None) -> str:
@@ -222,7 +227,15 @@ class TestExportCrud:
         with pytest.raises(sqlite3.IntegrityError):
             db.execute(
                 "INSERT INTO exports (id, user_id, format, duration, style, aspect_ratio, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (export_id, user_id, "mp4", 30, "waveform", "16:9", now),  # invalid style
+                (
+                    export_id,
+                    user_id,
+                    "mp4",
+                    30,
+                    "waveform",
+                    "16:9",
+                    now,
+                ),  # invalid style
             )
             db.commit()
 
@@ -234,7 +247,15 @@ class TestExportCrud:
         with pytest.raises(sqlite3.IntegrityError):
             db.execute(
                 "INSERT INTO exports (id, user_id, format, duration, style, aspect_ratio, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (export_id, user_id, "mp4", 30, "bars", "4:3", now),  # invalid aspect ratio
+                (
+                    export_id,
+                    user_id,
+                    "mp4",
+                    30,
+                    "bars",
+                    "4:3",
+                    now,
+                ),  # invalid aspect ratio
             )
             db.commit()
 
@@ -251,4 +272,10 @@ class TestExportCrud:
         assert ec.aspect_ratio == "1:1"
 
         with pytest.raises(Exception):  # pydantic.ValidationError
-            ExportCreate(user_id=str(uuid.uuid4()), format="webm", duration=10, style="bars", aspect_ratio="16:9")
+            ExportCreate(
+                user_id=str(uuid.uuid4()),
+                format="webm",
+                duration=10,
+                style="bars",
+                aspect_ratio="16:9",
+            )

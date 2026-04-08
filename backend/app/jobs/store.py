@@ -30,7 +30,9 @@ class JobStore:
     def __init__(self):
         self._jobs: dict[str, Job] = {}
 
-    def create(self, user_id: str, format: str, duration: int, style: str, aspect_ratio: str) -> Job:
+    def create(
+        self, user_id: str, format: str, duration: int, style: str, aspect_ratio: str
+    ) -> Job:
         """Create a new job, return it."""
         job = Job(
             id=str(uuid.uuid4()),

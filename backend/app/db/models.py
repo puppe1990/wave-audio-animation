@@ -8,8 +8,10 @@ from pydantic import BaseModel, Field
 
 # --- User models ---
 
+
 class UserCreate(BaseModel):
     """Payload for registering a new user."""
+
     email: str
     name: str | None = None
     password: str
@@ -17,6 +19,7 @@ class UserCreate(BaseModel):
 
 class User(BaseModel):
     """User row returned from the database."""
+
     id: str
     email: str
     name: str | None = None
@@ -33,6 +36,7 @@ ExportAspectRatio = Literal["16:9", "9:16", "1:1"]
 
 class ExportCreate(BaseModel):
     """Payload for creating a new export."""
+
     user_id: str
     format: ExportFormat
     duration: int = Field(ge=1)
@@ -42,6 +46,7 @@ class ExportCreate(BaseModel):
 
 class Export(BaseModel):
     """Export row returned from the database."""
+
     id: str
     user_id: str
     format: ExportFormat

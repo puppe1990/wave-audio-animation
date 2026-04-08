@@ -14,6 +14,7 @@ from app.db.connection import init_db
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def db():
     """Provide an in-memory database connection with tables initialized.
@@ -54,6 +55,7 @@ def test_app(db):
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _insert_user(db, user_id: str, email: str, name: str, password_hash: str) -> None:
     now = 1_000_000_000
     db.execute(
@@ -67,6 +69,7 @@ def _insert_user(db, user_id: str, email: str, name: str, password_hash: str) ->
 # POST /auth/register
 # ---------------------------------------------------------------------------
 
+
 class TestRegister:
     @pytest.mark.anyio
     async def test_register_creates_user_returns_201(self, test_app, db):
@@ -75,7 +78,11 @@ class TestRegister:
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
                 "/auth/register",
-                json={"email": "new@example.com", "name": "New User", "password": "secret123"},
+                json={
+                    "email": "new@example.com",
+                    "name": "New User",
+                    "password": "secret123",
+                },
             )
 
         assert response.status_code == 201
@@ -100,7 +107,9 @@ class TestRegister:
         assert data["email"] == "noname@example.com"
 
     @pytest.mark.anyio
-    async def test_register_duplicate_email_returns_409(self, test_app, db, auth_service):
+    async def test_register_duplicate_email_returns_409(
+        self, test_app, db, auth_service
+    ):
         """Registering with an email that already exists should return 409."""
         user_id = str(uuid.uuid4())
         hashed = auth_service.hash_password("existing_pw")
@@ -132,9 +141,12 @@ class TestRegister:
 # POST /auth/login
 # ---------------------------------------------------------------------------
 
+
 class TestLogin:
     @pytest.mark.anyio
-    async def test_login_with_correct_credentials_returns_token(self, test_app, db, auth_service):
+    async def test_login_with_correct_credentials_returns_token(
+        self, test_app, db, auth_service
+    ):
         """POST /auth/login with valid email+password should return a JWT."""
         user_id = str(uuid.uuid4())
         hashed = auth_service.hash_password("mypassword")
@@ -158,7 +170,9 @@ class TestLogin:
         assert payload["sub"] == user_id
 
     @pytest.mark.anyio
-    async def test_login_with_wrong_password_returns_401(self, test_app, db, auth_service):
+    async def test_login_with_wrong_password_returns_401(
+        self, test_app, db, auth_service
+    ):
         """Wrong password should return 401."""
         user_id = str(uuid.uuid4())
         hashed = auth_service.hash_password("correct_password")
@@ -204,6 +218,7 @@ class TestLogin:
 # Auth dependency (protected endpoint)
 # ---------------------------------------------------------------------------
 
+
 class TestAuthDependency:
     @pytest.mark.anyio
     async def test_access_protected_endpoint_without_auth_returns_401(self):
@@ -227,7 +242,9 @@ class TestAuthDependency:
         assert response.status_code == 401
 
     @pytest.mark.anyio
-    async def test_access_protected_endpoint_with_valid_token_returns_200(self, db, auth_service):
+    async def test_access_protected_endpoint_with_valid_token_returns_200(
+        self, db, auth_service
+    ):
         """A valid Bearer token should allow access to a protected endpoint."""
         from fastapi import Depends, FastAPI
 

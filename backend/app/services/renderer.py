@@ -5,7 +5,7 @@ import os
 ASPECT_RATIO_DIMENSIONS = {
     "16:9": (1280, 720),
     "9:16": (720, 1280),
-    "1:1":  (800, 800),
+    "1:1": (800, 800),
 }
 
 
@@ -18,7 +18,7 @@ class RendererService:
         self,
         amplitudes: list[float],
         frame_index: int,
-        style: str,          # "bars", "line", "mirror"
+        style: str,  # "bars", "line", "mirror"
         primary_color: str,  # hex like "#FF5733"
         background_color: str,
         width: int,
@@ -33,11 +33,21 @@ class RendererService:
         elif style == "line":
             self._draw_line(draw, amplitudes, frame_index, primary_color, width, height)
         elif style == "mirror":
-            self._draw_mirror(draw, amplitudes, frame_index, primary_color, width, height)
+            self._draw_mirror(
+                draw, amplitudes, frame_index, primary_color, width, height
+            )
 
         return img
 
-    def _draw_bars(self, draw: ImageDraw.ImageDraw, amplitudes: list[float], frame_index: int, color: str, width: int, height: int):
+    def _draw_bars(
+        self,
+        draw: ImageDraw.ImageDraw,
+        amplitudes: list[float],
+        frame_index: int,
+        color: str,
+        width: int,
+        height: int,
+    ):
         """64 bars with rounded rectangle radius 4, matching TypeScript exactly."""
         bar_count = 64
         bar_w = (width / bar_count) * 0.6
@@ -54,7 +64,15 @@ class RendererService:
             y2 = height
             draw.rounded_rectangle([x, y, x2, y2], radius=4, fill=color)
 
-    def _draw_line(self, draw: ImageDraw.ImageDraw, amplitudes: list[float], frame_index: int, color: str, width: int, height: int):
+    def _draw_line(
+        self,
+        draw: ImageDraw.ImageDraw,
+        amplitudes: list[float],
+        frame_index: int,
+        color: str,
+        width: int,
+        height: int,
+    ):
         """120-point line graph, centered, with round caps."""
         points = 120
         half = points // 2
@@ -76,7 +94,15 @@ class RendererService:
             for pt in [coords[0], coords[-1]]:
                 draw.ellipse([pt[0] - r, pt[1] - r, pt[0] + r, pt[1] + r], fill=color)
 
-    def _draw_mirror(self, draw: ImageDraw.ImageDraw, amplitudes: list[float], frame_index: int, color: str, width: int, height: int):
+    def _draw_mirror(
+        self,
+        draw: ImageDraw.ImageDraw,
+        amplitudes: list[float],
+        frame_index: int,
+        color: str,
+        width: int,
+        height: int,
+    ):
         """Mirror bars above and below center."""
         bar_count = 64
         bar_w = (width / bar_count) * 0.6
@@ -92,9 +118,13 @@ class RendererService:
             x2 = x + int(bar_w)
 
             # Upper bar
-            draw.rounded_rectangle([x, center_y - bar_h, x2, center_y], radius=3, fill=color)
+            draw.rounded_rectangle(
+                [x, center_y - bar_h, x2, center_y], radius=3, fill=color
+            )
             # Lower bar
-            draw.rounded_rectangle([x, center_y, x2, center_y + bar_h], radius=3, fill=color)
+            draw.rounded_rectangle(
+                [x, center_y, x2, center_y + bar_h], radius=3, fill=color
+            )
 
     def render_all_frames(
         self,

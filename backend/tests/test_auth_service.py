@@ -20,7 +20,9 @@ class TestHashPassword:
         assert len(hashed) > 0
         assert hashed != "my_secret_password"
 
-    def test_hash_password_produces_different_hashes_for_same_password(self, auth_service: AuthService):
+    def test_hash_password_produces_different_hashes_for_same_password(
+        self, auth_service: AuthService
+    ):
         """Each call should produce a unique hash due to bcrypt salt."""
         h1 = auth_service.hash_password("same_password")
         h2 = auth_service.hash_password("same_password")
@@ -28,17 +30,23 @@ class TestHashPassword:
 
 
 class TestVerifyPassword:
-    def test_verify_password_returns_true_for_correct_password(self, auth_service: AuthService):
+    def test_verify_password_returns_true_for_correct_password(
+        self, auth_service: AuthService
+    ):
         hashed = auth_service.hash_password("correct_password")
         assert auth_service.verify_password("correct_password", hashed) is True
 
-    def test_verify_password_returns_false_for_wrong_password(self, auth_service: AuthService):
+    def test_verify_password_returns_false_for_wrong_password(
+        self, auth_service: AuthService
+    ):
         hashed = auth_service.hash_password("correct_password")
         assert auth_service.verify_password("wrong_password", hashed) is False
 
 
 class TestCreateAccessToken:
-    def test_create_access_token_returns_valid_jwt_string(self, auth_service: AuthService):
+    def test_create_access_token_returns_valid_jwt_string(
+        self, auth_service: AuthService
+    ):
         token = auth_service.create_access_token(data={"sub": "user_123"})
         assert isinstance(token, str)
         assert len(token) > 0

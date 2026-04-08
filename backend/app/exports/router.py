@@ -65,7 +65,7 @@ async def process_export_job(
         frames_dir = OUTPUT_DIR / job_id / "frames"
         frames_dir.mkdir(parents=True, exist_ok=True)
 
-        frame_paths = renderer.render_all_frames(
+        renderer.render_all_frames(
             amplitudes=amplitudes,
             style=style,
             primary_color=primary_color,
@@ -102,7 +102,14 @@ async def process_export_job(
             export_id = str(uuid.uuid4())
             conn.execute(
                 "INSERT INTO exports (id, user_id, format, duration, style, aspect_ratio) VALUES (?, ?, ?, ?, ?, ?)",
-                (export_id, user_id, export_data.format, export_data.duration, export_data.style, export_data.aspect_ratio),
+                (
+                    export_id,
+                    user_id,
+                    export_data.format,
+                    export_data.duration,
+                    export_data.style,
+                    export_data.aspect_ratio,
+                ),
             )
             conn.commit()
         finally:
@@ -246,4 +253,6 @@ async def download_export(
     }
     media_type = media_type_map.get(job.format, "application/octet-stream")
 
-    return FileResponse(path=str(output_path), media_type=media_type, filename=output_path.name)
+    return FileResponse(
+        path=str(output_path), media_type=media_type, filename=output_path.name
+    )

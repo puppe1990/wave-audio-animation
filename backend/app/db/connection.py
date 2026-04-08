@@ -2,12 +2,12 @@
 
 import os
 import sqlite3
-import time
 from pathlib import Path
 
 # Try to import libsql_experimental; fall back to sqlite3 if unavailable.
 try:
     import libsql_experimental as libsql
+
     _HAS_LIBSQL = True
 except ImportError:
     _HAS_LIBSQL = False
@@ -34,6 +34,7 @@ def _is_turso_configured() -> bool:
 # ---------------------------------------------------------------------------
 # Connection
 # ---------------------------------------------------------------------------
+
 
 def get_connection(database: str | None = None) -> sqlite3.Connection:
     """Return a database connection.

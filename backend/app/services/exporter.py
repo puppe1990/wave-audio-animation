@@ -11,7 +11,9 @@ class ExporterService:
             raise RuntimeError("ffmpeg not found on PATH")
         self.ffmpeg_path = ffmpeg_path
 
-    def _run(self, args: list[str], cwd: str | Path | None = None) -> subprocess.CompletedProcess:
+    def _run(
+        self, args: list[str], cwd: str | Path | None = None
+    ) -> subprocess.CompletedProcess:
         """Run ffmpeg with the given args. Raise on non-zero exit."""
         return subprocess.run(
             [self.ffmpeg_path] + args,
@@ -33,13 +35,20 @@ class ExporterService:
 
         self._run(
             [
-                "-framerate", str(fps),
-                "-i", "frame_%06d.png",
-                "-i", str(audio_path),
-                "-c:v", "libx264",
-                "-c:a", "aac",
-                "-pix_fmt", "yuv420p",
-                "-crf", "23",
+                "-framerate",
+                str(fps),
+                "-i",
+                "frame_%06d.png",
+                "-i",
+                str(audio_path),
+                "-c:v",
+                "libx264",
+                "-c:a",
+                "aac",
+                "-pix_fmt",
+                "yuv420p",
+                "-crf",
+                "23",
                 "-shortest",
                 "-y",
                 str(output_path),
@@ -64,9 +73,12 @@ class ExporterService:
             # Pass 1: generate optimal palette
             self._run(
                 [
-                    "-framerate", str(fps),
-                    "-i", "frame_%06d.png",
-                    "-vf", "palettegen",
+                    "-framerate",
+                    str(fps),
+                    "-i",
+                    "frame_%06d.png",
+                    "-vf",
+                    "palettegen",
                     "-y",
                     str(palette_path),
                 ],
@@ -76,11 +88,16 @@ class ExporterService:
             # Pass 2: encode using the generated palette
             self._run(
                 [
-                    "-framerate", str(fps),
-                    "-i", "frame_%06d.png",
-                    "-i", str(palette_path),
-                    "-lavfi", "paletteuse",
-                    "-r", str(output_fps),
+                    "-framerate",
+                    str(fps),
+                    "-i",
+                    "frame_%06d.png",
+                    "-i",
+                    str(palette_path),
+                    "-lavfi",
+                    "paletteuse",
+                    "-r",
+                    str(output_fps),
                     "-y",
                     str(output_path),
                 ],

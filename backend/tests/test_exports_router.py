@@ -3,7 +3,6 @@
 import asyncio
 import io
 import sqlite3
-import uuid
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -16,6 +15,7 @@ from app.db.connection import init_db
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def db():
@@ -81,6 +81,7 @@ async def _register_and_login_async(client, email: str, password: str):
 # POST /exports
 # ---------------------------------------------------------------------------
 
+
 class TestCreateExport:
     @pytest.mark.anyio
     async def test_create_export_returns_202_with_job_id(self, db, test_audio_bytes):
@@ -88,7 +89,9 @@ class TestCreateExport:
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            user_id, token = await _register_and_login_async(client, "export@test.com", "pw123")
+            user_id, token = await _register_and_login_async(
+                client, "export@test.com", "pw123"
+            )
 
             response = await client.post(
                 "/exports",
@@ -122,40 +125,63 @@ class TestCreateExport:
             response = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
             )
 
         assert response.status_code == 401
 
     @pytest.mark.anyio
-    async def test_create_export_with_invalid_format_returns_422(self, db, test_audio_bytes):
+    async def test_create_export_with_invalid_format_returns_422(
+        self, db, test_audio_bytes
+    ):
         """Invalid export format should be rejected before the job is created."""
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token = await _register_and_login_async(client, "invalid-format@test.com", "pw123")
+            _, token = await _register_and_login_async(
+                client, "invalid-format@test.com", "pw123"
+            )
 
             response = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "avi", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                data={
+                    "format": "avi",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token}"},
             )
 
         assert response.status_code == 422
 
     @pytest.mark.anyio
-    async def test_create_export_with_invalid_style_returns_422(self, db, test_audio_bytes):
+    async def test_create_export_with_invalid_style_returns_422(
+        self, db, test_audio_bytes
+    ):
         """Invalid style should be rejected at the request boundary."""
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token = await _register_and_login_async(client, "invalid-style@test.com", "pw123")
+            _, token = await _register_and_login_async(
+                client, "invalid-style@test.com", "pw123"
+            )
 
             response = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "spiral", "aspect_ratio": "16:9"},
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "spiral",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token}"},
             )
 
@@ -167,12 +193,21 @@ class TestCreateExport:
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token = await _register_and_login_async(client, "large-file@test.com", "pw123")
+            _, token = await _register_and_login_async(
+                client, "large-file@test.com", "pw123"
+            )
 
             response = await client.post(
                 "/exports",
-                files={"audio": ("big.wav", b"x" * (50 * 1024 * 1024 + 1), "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                files={
+                    "audio": ("big.wav", b"x" * (50 * 1024 * 1024 + 1), "audio/wav")
+                },
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token}"},
             )
 
@@ -183,6 +218,7 @@ class TestCreateExport:
 # GET /exports/{job_id}/status
 # ---------------------------------------------------------------------------
 
+
 class TestJobStatus:
     @pytest.mark.anyio
     async def test_get_job_status_returns_job_data(self, db, test_audio_bytes):
@@ -190,7 +226,9 @@ class TestJobStatus:
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            user_id, token = await _register_and_login_async(client, "status@test.com", "pw123")
+            user_id, token = await _register_and_login_async(
+                client, "status@test.com", "pw123"
+            )
 
             # Create a job first
             resp = await client.post(
@@ -224,7 +262,9 @@ class TestJobStatus:
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token = await _register_and_login_async(client, "notfound@test.com", "pw123")
+            _, token = await _register_and_login_async(
+                client, "notfound@test.com", "pw123"
+            )
             resp = await client.get(
                 "/exports/non-existent-job-id/status",
                 headers={"Authorization": f"Bearer {token}"},
@@ -240,11 +280,18 @@ class TestJobStatus:
         # User A creates a job
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token_a = await _register_and_login_async(client, "usera@test.com", "pw123")
+            _, token_a = await _register_and_login_async(
+                client, "usera@test.com", "pw123"
+            )
             resp = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token_a}"},
             )
             job_id = resp.json()["job_id"]
@@ -252,7 +299,9 @@ class TestJobStatus:
         # User B tries to access User A's job
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token_b = await _register_and_login_async(client, "userb@test.com", "pw123")
+            _, token_b = await _register_and_login_async(
+                client, "userb@test.com", "pw123"
+            )
             resp = await client.get(
                 f"/exports/{job_id}/status",
                 headers={"Authorization": f"Bearer {token_b}"},
@@ -265,6 +314,7 @@ class TestJobStatus:
 # GET /exports/{job_id}/download
 # ---------------------------------------------------------------------------
 
+
 class TestJobDownload:
     @pytest.mark.anyio
     async def test_download_not_ready_returns_404(self, db, test_audio_bytes):
@@ -272,13 +322,20 @@ class TestJobDownload:
         app = _create_test_app(db)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            user_id, token = await _register_and_login_async(client, "download@test.com", "pw123")
+            user_id, token = await _register_and_login_async(
+                client, "download@test.com", "pw123"
+            )
 
             # Create a job
             resp = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token}"},
             )
             job_id = resp.json()["job_id"]
@@ -299,11 +356,18 @@ class TestJobDownload:
         # User A creates a job
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token_a = await _register_and_login_async(client, "downa@test.com", "pw123")
+            _, token_a = await _register_and_login_async(
+                client, "downa@test.com", "pw123"
+            )
             resp = await client.post(
                 "/exports",
                 files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
-                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                data={
+                    "format": "mp4",
+                    "duration": 1,
+                    "style": "bars",
+                    "aspect_ratio": "16:9",
+                },
                 headers={"Authorization": f"Bearer {token_a}"},
             )
             job_id = resp.json()["job_id"]
@@ -311,7 +375,9 @@ class TestJobDownload:
         # User B tries to download
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            _, token_b = await _register_and_login_async(client, "downb@test.com", "pw123")
+            _, token_b = await _register_and_login_async(
+                client, "downb@test.com", "pw123"
+            )
             resp = await client.get(
                 f"/exports/{job_id}/download",
                 headers={"Authorization": f"Bearer {token_b}"},
@@ -335,6 +401,7 @@ class TestJobDownload:
 # Background processing test
 # ---------------------------------------------------------------------------
 
+
 class TestBackgroundProcessing:
     @pytest.mark.anyio
     async def test_pipeline_completes_for_small_audio(self, db, test_audio_bytes):
@@ -348,6 +415,7 @@ class TestBackgroundProcessing:
         # Patch the job store and DB connection
         import app.jobs as jobs_module
         import app.exports.router as exports_router
+
         original_jobs_module_store = jobs_module.job_store
         original_router_store = exports_router.job_store
         original_db_getter = exports_router._db_getter
@@ -357,8 +425,12 @@ class TestBackgroundProcessing:
 
         try:
             transport = ASGITransport(app=app)
-            async with AsyncClient(transport=transport, base_url="http://test") as client:
-                _, token = await _register_and_login_async(client, "pipeline@test.com", "pw123")
+            async with AsyncClient(
+                transport=transport, base_url="http://test"
+            ) as client:
+                _, token = await _register_and_login_async(
+                    client, "pipeline@test.com", "pw123"
+                )
 
                 resp = await client.post(
                     "/exports",

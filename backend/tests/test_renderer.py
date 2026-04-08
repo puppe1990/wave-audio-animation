@@ -104,7 +104,9 @@ class TestDrawFrame:
         bg_color = (26, 26, 46)  # #1A1A2E in RGB
         # Check corners and center
         for x, y in [(0, 0), (1279, 0), (0, 719), (1279, 719), (640, 360)]:
-            assert pixels[x, y] == bg_color, f"Pixel at ({x}, {y}) is {pixels[x, y]}, expected {bg_color}"
+            assert pixels[x, y] == bg_color, (
+                f"Pixel at ({x}, {y}) is {pixels[x, y]}, expected {bg_color}"
+            )
 
 
 class TestRenderAllFrames:
@@ -153,7 +155,9 @@ class TestRenderAllFrames:
 
             for i, path in enumerate(paths, start=1):
                 expected_name = f"frame_{i:06d}.png"
-                assert path.endswith(expected_name), f"Expected {expected_name}, got {os.path.basename(path)}"
+                assert path.endswith(expected_name), (
+                    f"Expected {expected_name}, got {os.path.basename(path)}"
+                )
 
     def test_render_all_frames_creates_output_dir(self, renderer, amplitudes):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -171,7 +175,9 @@ class TestRenderAllFrames:
             assert os.path.exists(nested_dir)
             assert len(paths) == len(amplitudes)
 
-    def test_render_all_frames_images_have_correct_dimensions(self, renderer, amplitudes):
+    def test_render_all_frames_images_have_correct_dimensions(
+        self, renderer, amplitudes
+    ):
         with tempfile.TemporaryDirectory() as tmpdir:
             paths = renderer.render_all_frames(
                 amplitudes=amplitudes,

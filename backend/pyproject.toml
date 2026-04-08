@@ -22,6 +22,9 @@ dependencies = [
 dev = [
     "pytest>=8.3.0",
     "httpx>=0.27.0",
+    "ruff>=0.12.0",
+    "numpy>=2.0.0",
+    "scipy>=1.13.0",
 ]
 turso = [
     "libsql-experimental>=0.0.55",
@@ -29,6 +32,9 @@ turso = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
 
 [tool.setuptools]
 packages = [

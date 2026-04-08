@@ -18,6 +18,7 @@ _auth_service = AuthService()
 # Request / response models
 # ---------------------------------------------------------------------------
 
+
 class RegisterRequest(BaseModel):
     email: str
     name: str | None = None
@@ -45,6 +46,7 @@ class LoginResponse(BaseModel):
 # DB dependency (can be overridden in tests)
 # ---------------------------------------------------------------------------
 
+
 def _get_db() -> sqlite3.Connection:
     """Return a database connection. Override in tests via app.dependency_overrides."""
     return get_connection()
@@ -53,6 +55,7 @@ def _get_db() -> sqlite3.Connection:
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
 
 @router.post(
     "/register",

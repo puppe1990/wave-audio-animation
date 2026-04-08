@@ -26,7 +26,9 @@ class AudioService:
         fmt = format_map.get(ext)
         if fmt is None:
             supported = ", ".join(format_map.keys())
-            raise ValueError(f"Unsupported audio format '.{ext}'. Supported: {supported}")
+            raise ValueError(
+                f"Unsupported audio format '.{ext}'. Supported: {supported}"
+            )
 
         return AudioSegment.from_file(str(path), format=fmt)
 
@@ -48,7 +50,9 @@ class AudioService:
 
         return list(struct.unpack(fmt, trimmed))
 
-    def extract_amplitudes(self, audio: AudioSegment, fps: int = FRAMES_PER_SECOND) -> dict:
+    def extract_amplitudes(
+        self, audio: AudioSegment, fps: int = FRAMES_PER_SECOND
+    ) -> dict:
         """Extract RMS amplitude per frame, normalized to 0-1.
 
         Returns dict with:

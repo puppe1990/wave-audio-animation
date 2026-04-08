@@ -1,5 +1,3 @@
-import subprocess
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -55,7 +53,13 @@ class TestExporterServiceInit:
 
 
 class TestExportMp4:
-    def test_export_mp4_creates_output(self, exporter: ExporterService, frame_dir: Path, audio_file: Path, tmp_path: Path):
+    def test_export_mp4_creates_output(
+        self,
+        exporter: ExporterService,
+        frame_dir: Path,
+        audio_file: Path,
+        tmp_path: Path,
+    ):
         output = tmp_path / "output.mp4"
         result = exporter.export_mp4(frame_dir, audio_file, output, fps=10)
 
@@ -63,7 +67,13 @@ class TestExportMp4:
         assert output.exists()
         assert output.stat().st_size > 0
 
-    def test_export_mp4_magic_bytes(self, exporter: ExporterService, frame_dir: Path, audio_file: Path, tmp_path: Path):
+    def test_export_mp4_magic_bytes(
+        self,
+        exporter: ExporterService,
+        frame_dir: Path,
+        audio_file: Path,
+        tmp_path: Path,
+    ):
         output = tmp_path / "output.mp4"
         exporter.export_mp4(frame_dir, audio_file, output, fps=10)
 
@@ -78,7 +88,9 @@ class TestExportMp4:
 
 
 class TestExportGif:
-    def test_export_gif_creates_output(self, exporter: ExporterService, frame_dir: Path, tmp_path: Path):
+    def test_export_gif_creates_output(
+        self, exporter: ExporterService, frame_dir: Path, tmp_path: Path
+    ):
         output = tmp_path / "output.gif"
         result = exporter.export_gif(frame_dir, output, fps=10, output_fps=5)
 
@@ -86,16 +98,22 @@ class TestExportGif:
         assert output.exists()
         assert output.stat().st_size > 0
 
-    def test_export_gif_magic_bytes(self, exporter: ExporterService, frame_dir: Path, tmp_path: Path):
+    def test_export_gif_magic_bytes(
+        self, exporter: ExporterService, frame_dir: Path, tmp_path: Path
+    ):
         output = tmp_path / "output.gif"
         exporter.export_gif(frame_dir, output, fps=10, output_fps=5)
 
         # GIF files start with 'GIF87a' or 'GIF89a'
         with open(output, "rb") as f:
             header = f.read(6)
-        assert header in (b"GIF87a", b"GIF89a"), f"Expected GIF magic bytes, got {header}"
+        assert header in (b"GIF87a", b"GIF89a"), (
+            f"Expected GIF magic bytes, got {header}"
+        )
 
-    def test_export_gif_cleans_up_palette(self, exporter: ExporterService, frame_dir: Path, tmp_path: Path):
+    def test_export_gif_cleans_up_palette(
+        self, exporter: ExporterService, frame_dir: Path, tmp_path: Path
+    ):
         output = tmp_path / "output.gif"
         exporter.export_gif(frame_dir, output, fps=10, output_fps=5)
 
@@ -108,20 +126,34 @@ class TestExportGif:
 
 
 class TestExportDispatch:
-    def test_dispatch_mp4(self, exporter: ExporterService, frame_dir: Path, audio_file: Path, tmp_path: Path):
+    def test_dispatch_mp4(
+        self,
+        exporter: ExporterService,
+        frame_dir: Path,
+        audio_file: Path,
+        tmp_path: Path,
+    ):
         output = tmp_path / "output.mp4"
         result = exporter.export(frame_dir, audio_file, output, format="mp4", fps=10)
         assert result.exists()
         assert result.stat().st_size > 0
 
-    def test_dispatch_gif(self, exporter: ExporterService, frame_dir: Path, tmp_path: Path):
+    def test_dispatch_gif(
+        self, exporter: ExporterService, frame_dir: Path, tmp_path: Path
+    ):
         output = tmp_path / "output.gif"
         # export_gif does not need audio
         result = exporter.export(frame_dir, "", output, format="gif", fps=10)
         assert result.exists()
         assert result.stat().st_size > 0
 
-    def test_dispatch_unknown_format_raises(self, exporter: ExporterService, frame_dir: Path, audio_file: Path, tmp_path: Path):
+    def test_dispatch_unknown_format_raises(
+        self,
+        exporter: ExporterService,
+        frame_dir: Path,
+        audio_file: Path,
+        tmp_path: Path,
+    ):
         output = tmp_path / "output.xyz"
         with pytest.raises(ValueError, match="Unknown export format"):
             exporter.export(frame_dir, audio_file, output, format="xyz", fps=10)

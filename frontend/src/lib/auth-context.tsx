@@ -1,7 +1,7 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
-import { getToken, login as apiLogin, removeToken } from "@/lib/api-client"
+import { createContext, useCallback, useContext, useState } from "react"
+import { getToken, removeToken } from "@/lib/api-client"
 
 interface AuthContextValue {
   token: string | null
@@ -18,15 +18,7 @@ const AuthContext = createContext<AuthContextValue>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(null)
-
-  useEffect(() => {
-    // Read token from localStorage on mount
-    const stored = getToken()
-    if (stored) {
-      setTokenState(stored)
-    }
-  }, [])
+  const [token, setTokenState] = useState<string | null>(() => getToken())
 
   const setToken = useCallback((newToken: string) => {
     setTokenState(newToken)

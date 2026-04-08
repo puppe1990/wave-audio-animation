@@ -1,18 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { getToken } from "@/lib/api-client"
 
 export default function LandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  useEffect(() => {
-    const token = getToken()
-    if (token) {
-      setIsAuthenticated(true)
-    }
-  }, [])
+  const [isAuthenticated] = useState(() => !!getToken())
 
   const destination = isAuthenticated ? "/app" : "/login"
 
