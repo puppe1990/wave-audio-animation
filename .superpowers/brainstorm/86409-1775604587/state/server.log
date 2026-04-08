@@ -7,3 +7,4 @@
 {"type":"screen-added","file":"/Users/matheuspuppe/Desktop/Projetos/wave-audio-animation/.superpowers/brainstorm/86409-1775604587/content/editor-layout.html"}
 {"source":"user-event","type":"click","text":"1. Upload\n          2. Estilo\n          3. Exportar\n        \n        \n          ⬆ Arraste o áudio aqui\n        \n        Continuar →\n      \n    \n    \n      A — Wizard por etapas\n      Upload → Personalização → Exportação em passos separados. Simples e guiado.","choice":"wizard","id":null,"timestamp":1775604868508}
 {"type":"screen-added","file":"/Users/matheuspuppe/Desktop/Projetos/wave-audio-animation/.superpowers/brainstorm/86409-1775604587/content/waiting-2.html"}
+{"type":"server-stopped","reason":"idle timeout"}
