@@ -71,4 +71,17 @@ describe("StepCustomize", () => {
 
     expect(screen.getByText("track.mp3")).toBeTruthy()
   })
+
+  it("renders the selected file size", () => {
+    render(
+      <StepCustomize
+        audioFile={AUDIO_FILE}
+        config={DEFAULT_CONFIG}
+        onChange={vi.fn()}
+        onNext={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText(/0.0 MB/)).toBeTruthy()
+  })
 })

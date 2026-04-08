@@ -1,7 +1,15 @@
 import type { ReactNode } from "react"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 import { AppHeaderActions } from "@/components/editor/AppHeaderActions"
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const token = (await cookies()).get("auth_token")?.value
+
+  if (!token) {
+    redirect("/login")
+  }
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#0f172a,transparent_35%),linear-gradient(180deg,#020617_0%,#09090b_100%)] text-white">
       <header className="border-b border-white/10 backdrop-blur">

@@ -1,8 +1,9 @@
 import asyncio
 import uuid
 from pathlib import Path
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import FileResponse
 
 from app.auth.dependencies import get_current_user
@@ -19,6 +20,15 @@ router = APIRouter(prefix="/exports", tags=["exports"])
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
 UPLOAD_DIR = _BACKEND_DIR / "uploads"
 OUTPUT_DIR = _BACKEND_DIR / "outputs"
+MAX_AUDIO_BYTES = 50 * 1024 * 1024
+ACCEPTED_AUDIO_TYPES = {
+    "audio/mpeg",
+    "audio/wav",
+    "audio/x-wav",
+    "audio/mp4",
+    "audio/ogg",
+    "audio/aac",
+}
 
 # Database connection getter -- override in tests to inject in-memory db
 _db_getter = get_connection
@@ -117,16 +127,22 @@ async def process_export_job(
 @router.post("", status_code=202)
 async def create_export(
     audio: UploadFile = File(...),
-    format: str = Form("mp4"),
-    duration: int = Form(30),
-    style: str = Form("bars"),
-    aspect_ratio: str = Form("16:9"),
-    primary_color: str = Form("#FF5733"),
-    background_color: str = Form("#000000"),
+    format: Annotated[Literal["mp4", "gif"], Form()] = "mp4",
+    duration: Annotated[int, Form(ge=1)] = 30,
+    style: Annotated[Literal["bars", "line", "mirror"], Form()] = "bars",
+    aspect_ratio: Annotated[Literal["16:9", "9:16", "1:1"], Form()] = "16:9",
+    primary_color: Annotated[str, Form(pattern=r"^#[0-9A-Fa-f]{6}$")] = "#FF5733",
+    background_color: Annotated[str, Form(pattern=r"^#[0-9A-Fa-f]{6}$")] = "#000000",
     user_id: str = Depends(get_current_user),
 ):
     """Start an export job. Returns immediately with job_id."""
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+    if audio.content_type not in ACCEPTED_AUDIO_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Unsupported audio file type",
+        )
 
     # Save uploaded audio with unique name
     original_name = Path(audio.filename).stem if audio.filename else "audio"
@@ -134,8 +150,18 @@ async def create_export(
     audio_filename = f"{uuid.uuid4()}-{original_name}{ext}"
     audio_path = UPLOAD_DIR / audio_filename
 
-    audio_bytes = await audio.read()
-    audio_path.write_bytes(audio_bytes)
+    total_bytes = 0
+    with audio_path.open("wb") as buffer:
+        while chunk := await audio.read(1024 * 1024):
+            total_bytes += len(chunk)
+            if total_bytes > MAX_AUDIO_BYTES:
+                buffer.close()
+                audio_path.unlink(missing_ok=True)
+                raise HTTPException(
+                    status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                    detail="Audio file exceeds 50MB limit",
+                )
+            buffer.write(chunk)
 
     # Create job
     job = job_store.create(

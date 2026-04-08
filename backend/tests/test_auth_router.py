@@ -172,10 +172,11 @@ class TestLogin:
             )
 
         assert response.status_code == 401
+        assert response.json()["detail"] == "Invalid credentials"
 
     @pytest.mark.anyio
     async def test_login_with_nonexistent_email_returns_404(self, test_app):
-        """Email that doesn't exist in the database should return 404."""
+        """Email that doesn't exist in the database should return the same auth error."""
         transport = ASGITransport(app=test_app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
@@ -183,7 +184,8 @@ class TestLogin:
                 json={"email": "nobody@example.com", "password": "whatever"},
             )
 
-        assert response.status_code == 404
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Invalid credentials"
 
     @pytest.mark.anyio
     async def test_login_missing_fields_returns_422(self, test_app):

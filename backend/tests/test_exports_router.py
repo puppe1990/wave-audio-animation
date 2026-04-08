@@ -127,6 +127,57 @@ class TestCreateExport:
 
         assert response.status_code == 401
 
+    @pytest.mark.anyio
+    async def test_create_export_with_invalid_format_returns_422(self, db, test_audio_bytes):
+        """Invalid export format should be rejected before the job is created."""
+        app = _create_test_app(db)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            _, token = await _register_and_login_async(client, "invalid-format@test.com", "pw123")
+
+            response = await client.post(
+                "/exports",
+                files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
+                data={"format": "avi", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        assert response.status_code == 422
+
+    @pytest.mark.anyio
+    async def test_create_export_with_invalid_style_returns_422(self, db, test_audio_bytes):
+        """Invalid style should be rejected at the request boundary."""
+        app = _create_test_app(db)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            _, token = await _register_and_login_async(client, "invalid-style@test.com", "pw123")
+
+            response = await client.post(
+                "/exports",
+                files={"audio": ("test.wav", test_audio_bytes, "audio/wav")},
+                data={"format": "mp4", "duration": 1, "style": "spiral", "aspect_ratio": "16:9"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        assert response.status_code == 422
+
+    @pytest.mark.anyio
+    async def test_create_export_with_large_file_returns_413(self, db):
+        """Oversized uploads should be rejected before saving to disk."""
+        app = _create_test_app(db)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            _, token = await _register_and_login_async(client, "large-file@test.com", "pw123")
+
+            response = await client.post(
+                "/exports",
+                files={"audio": ("big.wav", b"x" * (50 * 1024 * 1024 + 1), "audio/wav")},
+                data={"format": "mp4", "duration": 1, "style": "bars", "aspect_ratio": "16:9"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        assert response.status_code == 413
+
 
 # ---------------------------------------------------------------------------
 # GET /exports/{job_id}/status

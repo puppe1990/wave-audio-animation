@@ -134,18 +134,18 @@ export function StepExport({ audioFile, config, onRestart }: Props) {
       {progress !== null && isProcessing ? (
         <section>
           <p className="mb-2 text-sm text-cyan-300">
-            Gerando video... {Math.round(progress * 100)}%
+            Gerando video... {Math.round(progress)}%
           </p>
           <div
             role="progressbar"
-            aria-valuenow={Math.round(progress * 100)}
+            aria-valuenow={Math.round(progress)}
             aria-valuemin={0}
             aria-valuemax={100}
             className="h-2 overflow-hidden rounded-full bg-zinc-800"
           >
             <div
               className="h-full bg-cyan-400 transition-all"
-              style={{ width: `${progress * 100}%` }}
+              style={{ width: `${progress}%` }}
             />
           </div>
         </section>

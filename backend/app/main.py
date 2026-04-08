@@ -13,8 +13,7 @@ from app.exports.router import router as exports_router
 async def lifespan(app: FastAPI):
     init_db()
     # Ensure upload and output directories exist (absolute paths)
-    from pathlib import Path
-    _backend = Path(__file__).resolve().parent
+    _backend = Path(__file__).resolve().parents[1]
     (_backend / "uploads").mkdir(parents=True, exist_ok=True)
     (_backend / "outputs").mkdir(parents=True, exist_ok=True)
     yield

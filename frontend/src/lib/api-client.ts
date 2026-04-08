@@ -134,14 +134,16 @@ interface CreateExportResponse {
 }
 
 interface JobStatus {
-  id: string
+  job_id: string
   status: string
   progress: number
   error_message: string | null
   format: string
   style: string
   aspect_ratio: string
+  duration: number
   created_at: string
+  updated_at: string
 }
 
 async function createExport(formData: FormData): Promise<CreateExportResponse> {
