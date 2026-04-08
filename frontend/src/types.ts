@@ -2,6 +2,11 @@ export type WaveStyle = "bars" | "line" | "mirror"
 export type AspectRatio = "16:9" | "9:16" | "1:1"
 export type ExportFormat = "mp4" | "gif"
 
+/**
+ * @deprecated AudioData is no longer used by the frontend.
+ * Audio processing is now handled server-side by the FastAPI backend.
+ * This type is kept for reference only.
+ */
 export interface AudioData {
   amplitudes: Float32Array
   duration: number       // total seconds
@@ -20,6 +25,11 @@ export interface EditorConfig {
 export interface RendererOptions extends EditorConfig {
   width: number
   height: number
+}
+
+export interface EditorState {
+  audioFile: File
+  config: EditorConfig
 }
 
 export const ASPECT_RATIO_DIMENSIONS: Record<AspectRatio, [number, number]> = {

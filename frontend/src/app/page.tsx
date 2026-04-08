@@ -1,9 +1,20 @@
-import Link from "next/link"
-import { auth } from "@/auth"
+"use client"
 
-export default async function LandingPage() {
-  const session = await auth()
-  const destination = session ? "/app" : "/login"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { getToken } from "@/lib/api-client"
+
+export default function LandingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const token = getToken()
+    if (token) {
+      setIsAuthenticated(true)
+    }
+  }, [])
+
+  const destination = isAuthenticated ? "/app" : "/login"
 
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#164e63,transparent_25%),radial-gradient(circle_at_bottom_left,#0f172a,transparent_30%),linear-gradient(180deg,#020617_0%,#09090b_100%)]">
@@ -11,14 +22,14 @@ export default async function LandingPage() {
         <header className="flex items-center justify-between border-b border-white/10 pb-6">
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Wave</p>
-            <p className="mt-2 text-sm text-zinc-400">Vídeos com onda de áudio para cortes e podcasts</p>
+            <p className="mt-2 text-sm text-zinc-400">Videos com onda de audio para cortes e podcasts</p>
           </div>
 
           <Link
             href={destination}
             className="rounded-full border border-cyan-400/40 px-4 py-2 text-sm font-medium text-cyan-200 transition hover:border-cyan-300 hover:text-white"
           >
-            {session ? "Abrir editor" : "Entrar"}
+            {isAuthenticated ? "Abrir editor" : "Entrar"}
           </Link>
         </header>
 
@@ -26,10 +37,10 @@ export default async function LandingPage() {
           <div>
             <p className="mb-4 text-sm uppercase tracking-[0.35em] text-cyan-300">MicroSaaS para creators</p>
             <h1 className="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">
-              Transforme seu podcast em um vídeo pronto para Reels, TikTok e Shorts.
+              Transforme seu podcast em um video pronto para Reels, TikTok e Shorts.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
-              Suba o áudio, escolha o estilo da onda, personalize as cores e exporte MP4 ou GIF direto no navegador.
+              Suba o audio, escolha o estilo da onda, personalize as cores e exporte direto do navegador com nosso backend.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
@@ -37,7 +48,7 @@ export default async function LandingPage() {
                 href={destination}
                 className="rounded-2xl bg-cyan-400 px-6 py-4 text-base font-semibold text-zinc-950 transition hover:bg-cyan-300"
               >
-                Começar agora
+                Comecar agora
               </Link>
               <a
                 href="#como-funciona"
@@ -80,9 +91,9 @@ export default async function LandingPage() {
 
         <section id="como-funciona" className="grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-3">
           {[
-            ["1. Upload", "Validação local de formato e tamanho antes de processar."],
-            ["2. Personalização", "Barras, linha ou espelho com cores e proporções de social."],
-            ["3. Exportação", "Render em canvas + ffmpeg.wasm sem depender de backend de vídeo."],
+            ["1. Upload", "Validacao local de formato e tamanho antes de enviar ao servidor."],
+            ["2. Personalizacao", "Barras, linha ou espelho com cores e proporcoes de social."],
+            ["3. Exportacao", "Processamento server-side com polling de status e download direto."],
           ].map(([title, description]) => (
             <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-5">
               <h3 className="text-lg font-semibold">{title}</h3>

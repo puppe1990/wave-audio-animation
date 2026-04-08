@@ -1,7 +1,6 @@
 "use client"
 
-import { WaveformPreview } from "./WaveformPreview"
-import type { AspectRatio, AudioData, EditorConfig, WaveStyle } from "@/types"
+import type { AspectRatio, EditorConfig, WaveStyle } from "@/types"
 
 const STYLES: Array<{ key: WaveStyle; label: string }> = [
   { key: "bars", label: "Barras" },
@@ -12,20 +11,28 @@ const STYLES: Array<{ key: WaveStyle; label: string }> = [
 const RATIOS: AspectRatio[] = ["16:9", "9:16", "1:1"]
 
 interface Props {
-  audioData: AudioData
+  audioFile: File
   config: EditorConfig
   onChange: (config: EditorConfig) => void
   onNext: () => void
 }
 
-export function StepCustomize({ audioData, config, onChange, onNext }: Props) {
+export function StepCustomize({ audioFile, config, onChange, onNext }: Props) {
   function setConfigValue<Key extends keyof EditorConfig>(key: Key, value: EditorConfig[Key]) {
     onChange({ ...config, [key]: value })
   }
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <WaveformPreview audioData={audioData} config={config} />
+      {audioFile && (
+        <section className="rounded-3xl border border-zinc-800 bg-zinc-950/80 p-6">
+          <p className="mb-2 text-xs uppercase tracking-[0.3em] text-zinc-500">Arquivo selecionado</p>
+          <p className="text-lg font-medium text-white">{audioFile.name}</p>
+          <p className="mt-1 text-sm text-zinc-400">
+            {(audioFile.size / (1024 * 1024)).toFixed(1)} MB -- o processamento de audio sera feito no servidor.
+          </p>
+        </section>
+      )}
 
       <div className="grid gap-6 rounded-3xl border border-zinc-800 bg-zinc-950/80 p-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="space-y-6">
@@ -50,7 +57,7 @@ export function StepCustomize({ audioData, config, onChange, onNext }: Props) {
           </section>
 
           <section>
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-zinc-500">Proporção</p>
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-zinc-500">Proporcao</p>
             <div className="flex flex-wrap gap-3">
               {RATIOS.map((ratio) => (
                 <button
@@ -96,7 +103,7 @@ export function StepCustomize({ audioData, config, onChange, onNext }: Props) {
             onClick={onNext}
             className="mt-2 rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-zinc-950 transition hover:bg-cyan-300"
           >
-            Continuar para exportação
+            Continuar para exportacao
           </button>
         </section>
       </div>

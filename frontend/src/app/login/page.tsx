@@ -1,25 +1,33 @@
 "use client"
 
 import Link from "next/link"
-import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { login as apiLogin, ApiError } from "@/lib/api-client"
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState("")
+  const router = useRouter()
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError]       = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  async function handleCredentials(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
-    if (result?.error) {
-      setError("Email ou senha inválidos.")
-    } else {
-      window.location.href = "/app"
+    setError("")
+    setLoading(true)
+
+    try {
+      await apiLogin({ email, password })
+      router.push("/app")
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setError("Email ou senha invalidos.")
+      } else {
+        setError("Nao foi possivel fazer login. Tente novamente.")
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -28,20 +36,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm p-8 rounded-2xl bg-gray-900 flex flex-col gap-4">
         <h1 className="text-2xl font-bold text-white text-center">Entrar</h1>
 
-        <button
-          onClick={() => signIn("google", { callbackUrl: "/app" })}
-          className="w-full py-2 rounded-lg bg-white text-gray-900 font-medium hover:bg-gray-100 transition"
-        >
-          Entrar com Google
-        </button>
-
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-gray-700" />
-          <span className="text-gray-500 text-sm">ou</span>
-          <div className="flex-1 h-px bg-gray-700" />
-        </div>
-
-        <form onSubmit={handleCredentials} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           <input
             type="email"
@@ -63,14 +58,15 @@ export default function LoginPage() {
           />
           <button
             type="submit"
-            className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition"
+            disabled={loading}
+            className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition disabled:opacity-60"
           >
-            Entrar
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-400">
-          Ainda não tem conta?{" "}
+          Ainda nao tem conta?{" "}
           <Link href="/register" className="text-cyan-300 hover:text-cyan-200">
             Criar conta
           </Link>

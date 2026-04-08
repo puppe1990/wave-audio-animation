@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
 import { useState } from "react"
+import { register as apiRegister, login as apiLogin, ApiError } from "@/lib/api-client"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -19,32 +19,16 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      })
-
-      const payload = (await response.json()) as { error?: string }
-
-      if (!response.ok) {
-        setError(payload.error ?? "Não foi possível criar sua conta.")
-        return
-      }
-
-      const signInResult = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (signInResult?.error) {
-        router.push("/login")
-        return
-      }
-
+      await apiRegister({ name, email, password })
+      await apiLogin({ email, password })
       router.push("/app")
-      router.refresh()
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const detail = (err.body as { detail?: string } | undefined)?.detail
+        setError(detail ?? "Nao foi possivel criar sua conta.")
+      } else {
+        setError("Nao foi possivel criar sua conta.")
+      }
     } finally {
       setLoading(false)
     }
@@ -56,7 +40,7 @@ export default function RegisterPage() {
         <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Wave</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">Criar conta</h1>
         <p className="mt-2 text-sm text-zinc-400">
-          Gere seus primeiros vídeos com animação de áudio direto no navegador.
+          Gere seus primeiros videos com animacao de audio direto no navegador.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
@@ -102,7 +86,7 @@ export default function RegisterPage() {
         </form>
 
         <p className="mt-6 text-sm text-zinc-400">
-          Já tem conta?{" "}
+          Ja tem conta?{" "}
           <Link href="/login" className="text-cyan-300 hover:text-cyan-200">
             Entrar
           </Link>

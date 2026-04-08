@@ -1,14 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { StepCustomize } from "./StepCustomize"
-import type { AudioData, EditorConfig } from "@/types"
+import type { EditorConfig } from "@/types"
 
-const AUDIO: AudioData = {
-  amplitudes: new Float32Array(30).fill(0.5),
-  duration: 1,
-  sampleRate: 44100,
-  frameCount: 30,
-}
+const AUDIO_FILE = new File([new ArrayBuffer(1024)], "track.mp3", { type: "audio/mpeg" })
 
 const DEFAULT_CONFIG: EditorConfig = {
   style: "bars",
@@ -21,7 +16,7 @@ describe("StepCustomize", () => {
   it("renders all three style buttons", () => {
     render(
       <StepCustomize
-        audioData={AUDIO}
+        audioFile={AUDIO_FILE}
         config={DEFAULT_CONFIG}
         onChange={vi.fn()}
         onNext={vi.fn()}
@@ -38,7 +33,7 @@ describe("StepCustomize", () => {
 
     render(
       <StepCustomize
-        audioData={AUDIO}
+        audioFile={AUDIO_FILE}
         config={DEFAULT_CONFIG}
         onChange={onChange}
         onNext={vi.fn()}
@@ -52,7 +47,7 @@ describe("StepCustomize", () => {
   it("renders aspect ratio selector", () => {
     render(
       <StepCustomize
-        audioData={AUDIO}
+        audioFile={AUDIO_FILE}
         config={DEFAULT_CONFIG}
         onChange={vi.fn()}
         onNext={vi.fn()}
@@ -62,5 +57,18 @@ describe("StepCustomize", () => {
     expect(screen.getByText("16:9")).toBeTruthy()
     expect(screen.getByText("9:16")).toBeTruthy()
     expect(screen.getByText("1:1")).toBeTruthy()
+  })
+
+  it("renders the selected file name", () => {
+    render(
+      <StepCustomize
+        audioFile={AUDIO_FILE}
+        config={DEFAULT_CONFIG}
+        onChange={vi.fn()}
+        onNext={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText("track.mp3")).toBeTruthy()
   })
 })

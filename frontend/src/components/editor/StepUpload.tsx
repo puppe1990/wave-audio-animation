@@ -1,8 +1,6 @@
 "use client"
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react"
-import { decodeAudio } from "@/lib/audio"
-import type { AudioData } from "@/types"
 
 const ACCEPTED_TYPES = [
   "audio/mpeg",
@@ -16,44 +14,46 @@ const ACCEPTED_TYPES = [
 const MAX_BYTES = 50 * 1024 * 1024
 
 interface Props {
-  onAudioReady: (data: AudioData) => void
+  onFileSelected: (file: File) => void
 }
 
-export function StepUpload({ onAudioReady }: Props) {
+export function StepUpload({ onFileSelected }: Props) {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  async function processFile(file: File) {
+  function validateFile(file: File): string | null {
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      return "Formato invalido. Use MP3, WAV, M4A ou OGG."
+    }
+    if (file.size > MAX_BYTES) {
+      return "Arquivo muito grande. O limite e 50MB."
+    }
+    return null
+  }
+
+  function processFile(file: File) {
     setError("")
 
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError("Formato inválido. Use MP3, WAV, M4A ou OGG.")
-      return
-    }
-
-    if (file.size > MAX_BYTES) {
-      setError("Arquivo muito grande. O limite é 50MB.")
+    const validationError = validateFile(file)
+    if (validationError) {
+      setError(validationError)
       return
     }
 
     setLoading(true)
-
-    try {
-      const audioData = await decodeAudio(file)
-      onAudioReady(audioData)
-    } catch {
-      setError("Não foi possível decodificar o áudio. Tente outro arquivo.")
-    } finally {
+    // Small delay to show loading state, then pass file to next step
+    setTimeout(() => {
+      onFileSelected(file)
       setLoading(false)
-    }
+    }, 300)
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (file) {
-      void processFile(file)
+      processFile(file)
     }
   }
 
@@ -63,7 +63,7 @@ export function StepUpload({ onAudioReady }: Props) {
 
     const file = event.dataTransfer.files[0]
     if (file) {
-      void processFile(file)
+      processFile(file)
     }
   }
 
@@ -84,9 +84,9 @@ export function StepUpload({ onAudioReady }: Props) {
         }`}
       >
         <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Upload</p>
-        <p className="mt-4 text-2xl font-semibold text-white">Arraste o áudio aqui</p>
+        <p className="mt-4 text-2xl font-semibold text-white">Arraste o audio aqui</p>
         <p className="mt-2 text-sm text-zinc-400">ou clique para selecionar</p>
-        <p className="mt-6 text-xs text-zinc-500">MP3, WAV, M4A, OGG. Máximo de 50 MB.</p>
+        <p className="mt-6 text-xs text-zinc-500">MP3, WAV, M4A, OGG. Maximo de 50 MB.</p>
       </div>
 
       <input
@@ -97,7 +97,7 @@ export function StepUpload({ onAudioReady }: Props) {
         className="hidden"
       />
 
-      {loading ? <p className="text-sm text-cyan-300">Processando áudio...</p> : null}
+      {loading ? <p className="text-sm text-cyan-300">Verificando audio...</p> : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
     </div>
   )

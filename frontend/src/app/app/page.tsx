@@ -4,7 +4,7 @@ import { useState } from "react"
 import { StepCustomize } from "@/components/editor/StepCustomize"
 import { StepExport } from "@/components/editor/StepExport"
 import { StepUpload } from "@/components/editor/StepUpload"
-import type { AudioData, EditorConfig } from "@/types"
+import type { EditorConfig } from "@/types"
 
 const STEPS = ["Upload", "Personalizar", "Exportar"] as const
 
@@ -17,17 +17,17 @@ const DEFAULT_CONFIG: EditorConfig = {
 
 export default function EditorPage() {
   const [step, setStep] = useState(0)
-  const [audioData, setAudioData] = useState<AudioData | null>(null)
+  const [audioFile, setAudioFile] = useState<File | null>(null)
   const [config, setConfig] = useState<EditorConfig>(DEFAULT_CONFIG)
 
   function handleRestart() {
-    setAudioData(null)
+    setAudioFile(null)
     setConfig(DEFAULT_CONFIG)
     setStep(0)
   }
 
-  function handleAudioReady(data: AudioData) {
-    setAudioData(data)
+  function handleFileSelected(file: File) {
+    setAudioFile(file)
     setStep(1)
   }
 
@@ -52,17 +52,17 @@ export default function EditorPage() {
         ))}
       </div>
 
-      {step === 0 ? <StepUpload onAudioReady={handleAudioReady} /> : null}
-      {step === 1 && audioData ? (
+      {step === 0 ? <StepUpload onFileSelected={handleFileSelected} /> : null}
+      {step === 1 && audioFile ? (
         <StepCustomize
-          audioData={audioData}
+          audioFile={audioFile}
           config={config}
           onChange={setConfig}
           onNext={() => setStep(2)}
         />
       ) : null}
-      {step === 2 && audioData ? (
-        <StepExport audioData={audioData} config={config} onRestart={handleRestart} />
+      {step === 2 && audioFile ? (
+        <StepExport audioFile={audioFile} config={config} onRestart={handleRestart} />
       ) : null}
     </div>
   )

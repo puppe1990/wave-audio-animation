@@ -31,5 +31,5 @@
 
 # Backend runtime
 /backend/uploads/
-/backend/Outputs/
+/backend/outputs/
 /backend/data/
