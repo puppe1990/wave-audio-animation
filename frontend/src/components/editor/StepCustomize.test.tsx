@@ -3,8 +3,6 @@ import { describe, expect, it, vi } from "vitest"
 import { StepCustomize } from "./StepCustomize"
 import type { EditorConfig } from "@/types"
 
-const AUDIO_FILE = new File([new ArrayBuffer(1024)], "track.mp3", { type: "audio/mpeg" })
-
 const DEFAULT_CONFIG: EditorConfig = {
   style: "bars",
   primaryColor: "#6366f1",
@@ -15,12 +13,7 @@ const DEFAULT_CONFIG: EditorConfig = {
 describe("StepCustomize", () => {
   it("renders all three style buttons", () => {
     render(
-      <StepCustomize
-        audioFile={AUDIO_FILE}
-        config={DEFAULT_CONFIG}
-        onChange={vi.fn()}
-        onNext={vi.fn()}
-      />
+      <StepCustomize config={DEFAULT_CONFIG} onChange={vi.fn()} onNext={vi.fn()} />
     )
 
     expect(screen.getByText(/barras/i)).toBeTruthy()
@@ -32,12 +25,7 @@ describe("StepCustomize", () => {
     const onChange = vi.fn()
 
     render(
-      <StepCustomize
-        audioFile={AUDIO_FILE}
-        config={DEFAULT_CONFIG}
-        onChange={onChange}
-        onNext={vi.fn()}
-      />
+      <StepCustomize config={DEFAULT_CONFIG} onChange={onChange} onNext={vi.fn()} />
     )
 
     fireEvent.click(screen.getByText(/linha/i))
@@ -46,12 +34,7 @@ describe("StepCustomize", () => {
 
   it("renders aspect ratio selector", () => {
     render(
-      <StepCustomize
-        audioFile={AUDIO_FILE}
-        config={DEFAULT_CONFIG}
-        onChange={vi.fn()}
-        onNext={vi.fn()}
-      />
+      <StepCustomize config={DEFAULT_CONFIG} onChange={vi.fn()} onNext={vi.fn()} />
     )
 
     expect(screen.getByText("16:9")).toBeTruthy()
@@ -59,29 +42,30 @@ describe("StepCustomize", () => {
     expect(screen.getByText("1:1")).toBeTruthy()
   })
 
-  it("renders the selected file name", () => {
+  it("renders continue button", () => {
     render(
-      <StepCustomize
-        audioFile={AUDIO_FILE}
-        config={DEFAULT_CONFIG}
-        onChange={vi.fn()}
-        onNext={vi.fn()}
-      />
+      <StepCustomize config={DEFAULT_CONFIG} onChange={vi.fn()} onNext={vi.fn()} />
     )
 
-    expect(screen.getByText("track.mp3")).toBeTruthy()
+    expect(screen.getByRole("button", { name: /continuar/i })).toBeTruthy()
   })
 
-  it("renders the selected file size", () => {
+  it("calls onNext when continue button clicked", () => {
+    const onNext = vi.fn()
+
     render(
-      <StepCustomize
-        audioFile={AUDIO_FILE}
-        config={DEFAULT_CONFIG}
-        onChange={vi.fn()}
-        onNext={vi.fn()}
-      />
+      <StepCustomize config={DEFAULT_CONFIG} onChange={vi.fn()} onNext={onNext} />
     )
 
-    expect(screen.getByText(/0.0 MB/)).toBeTruthy()
+    fireEvent.click(screen.getByRole("button", { name: /continuar/i }))
+    expect(onNext).toHaveBeenCalledTimes(1)
+  })
+
+  it("renders preview section", () => {
+    render(
+      <StepCustomize config={DEFAULT_CONFIG} onChange={vi.fn()} onNext={vi.fn()} />
+    )
+
+    expect(screen.getByText(/preview/i)).toBeTruthy()
   })
 })

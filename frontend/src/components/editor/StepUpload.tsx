@@ -1,6 +1,7 @@
 "use client"
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 const ACCEPTED_TYPES = [
   "audio/mpeg",
@@ -127,8 +128,19 @@ export function StepUpload({ onFileSelected }: Props) {
           {/* Separator line */}
           <div className={`h-px w-12 transition-colors duration-300 ${dragging ? "bg-cyan-400/60" : "bg-zinc-700"}`} />
 
-          {/* Secondary text */}
-          <p className="text-sm text-zinc-400">ou clique para selecionar</p>
+          {/* Secondary action */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation()
+              inputRef.current?.click()
+            }}
+            className="border-zinc-700 bg-transparent text-xs text-zinc-400 hover:border-zinc-600 hover:bg-transparent hover:text-zinc-200"
+          >
+            Escolher arquivo
+          </Button>
 
           {/* Format info */}
           <p className="text-[11px] tracking-wider text-zinc-600">
