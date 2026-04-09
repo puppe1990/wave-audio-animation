@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { login as apiLogin, ApiError } from "@/lib/api-client"
+import PasswordInput from "@/components/PasswordInput"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -47,14 +48,13 @@ export default function LoginPage() {
             required
             className="px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-indigo-500"
           />
-          <input
-            type="password"
+          <PasswordInput
             placeholder="Senha"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-indigo-500"
+            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-indigo-500"
           />
           <button
             type="submit"
