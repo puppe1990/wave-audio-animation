@@ -28,6 +28,7 @@
 # Data/State
 .data/
 .superpowers/
+.worktrees/
 
 # Backend runtime
 /backend/uploads/
