@@ -43,8 +43,8 @@ describe("StepExport", () => {
 
   it("renders MP4 and GIF format buttons", () => {
     render(<StepExport audioFile={AUDIO_FILE} config={CONFIG} />)
-    expect(screen.getByText("MP4")).toBeTruthy()
-    expect(screen.getByText("GIF")).toBeTruthy()
+    expect(screen.getByRole("button", { name: "mp4" })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "gif" })).toBeTruthy()
   })
 
   it("renders export button", () => {

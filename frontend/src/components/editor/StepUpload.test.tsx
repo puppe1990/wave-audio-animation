@@ -23,7 +23,7 @@ describe("StepUpload", () => {
     const big = new File([new ArrayBuffer(51 * 1024 * 1024)], "big.mp3", { type: "audio/mpeg" })
     Object.defineProperty(input, "files", { value: [big] })
     fireEvent.change(input)
-    expect(screen.getByText(/50MB/i)).toBeTruthy()
+    expect(screen.getByText(/arquivo muito grande/i)).toBeTruthy()
   })
 
   it("calls onFileSelected with valid file", async () => {
