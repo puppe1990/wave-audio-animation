@@ -48,7 +48,7 @@ def get_connection(database: str | None = None) -> sqlite3.Connection:
         if _HAS_LIBSQL and database.startswith(("libsql://", "http://", "https://")):
             conn = libsql.connect(database, auth_token=TURSO_AUTH_TOKEN)
         else:
-            conn = sqlite3.connect(database)
+            conn = sqlite3.connect(database, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
@@ -60,7 +60,7 @@ def get_connection(database: str | None = None) -> sqlite3.Connection:
         return conn
 
     # Local SQLite fallback
-    conn = sqlite3.connect(LOCAL_DB_PATH)
+    conn = sqlite3.connect(LOCAL_DB_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
