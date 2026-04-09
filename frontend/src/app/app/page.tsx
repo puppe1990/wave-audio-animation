@@ -4,54 +4,55 @@ import { useState } from "react"
 import { StepCustomize } from "@/components/editor/StepCustomize"
 import { StepExport } from "@/components/editor/StepExport"
 import { StepUpload } from "@/components/editor/StepUpload"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { EditorConfig } from "@/types"
 
-interface StepDef {
-  key: string
-  label: string
-  icon: React.FC<{ active?: boolean }>
-}
+const STEP_KEYS = ["upload", "customize", "export"] as const
+type StepKey = (typeof STEP_KEYS)[number]
 
-function UploadIcon({ active = false }: { active?: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" y1="3" x2="12" y2="15" />
-    </svg>
-  )
+const STEP_LABELS: Record<StepKey, string> = {
+  upload: "Upload",
+  customize: "Personalizar",
+  export: "Exportar",
 }
-
-function CustomizeIcon({ active = false }: { active?: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  )
-}
-
-function ExportIcon({ active = false }: { active?: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-  )
-}
-
-const STEPS: StepDef[] = [
-  { key: "upload", label: "Upload", icon: UploadIcon },
-  { key: "customize", label: "Personalizar", icon: CustomizeIcon },
-  { key: "export", label: "Exportar", icon: ExportIcon },
-]
 
 const DEFAULT_CONFIG: EditorConfig = {
   style: "bars",
   primaryColor: "#22d3ee",
   backgroundColor: "#020617",
   aspectRatio: "16:9",
+}
+
+function StepIndicator({
+  index,
+  isComplete,
+  isActive,
+}: {
+  index: number
+  isComplete: boolean
+  isActive: boolean
+}) {
+  if (isComplete) {
+    return (
+      <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-zinc-700 text-[10px] text-zinc-300">
+        ✓
+      </span>
+    )
+  }
+  return (
+    <span
+      className={`flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[10px] ${
+        isActive
+          ? "border-cyan-400 bg-cyan-950/40 text-cyan-400"
+          : "border-zinc-700 bg-zinc-900 text-zinc-500"
+      }`}
+    >
+      {index + 1}
+    </span>
+  )
 }
 
 export default function EditorPage() {
@@ -70,73 +71,91 @@ export default function EditorPage() {
     setStep(1)
   }
 
+  function handleTabChange(value: string) {
+    const idx = STEP_KEYS.indexOf(value as StepKey)
+    if (idx !== -1 && idx <= step) {
+      setStep(idx)
+    }
+  }
+
   return (
-    <div className="mx-auto max-w-6xl">
-      {/* Step indicator bar */}
-      <nav className="mb-10 flex items-center justify-center" aria-label="Progresso do editor">
-        <div className="flex items-center">
-          {STEPS.map((s, index) => {
-            const isComplete = index < step
-            const isActive = index === step
-            const Icon = s.icon
-            return (
-              <div key={s.key} className="flex items-center">
-                {/* Connector line (before each step except first) */}
-                {index > 0 && (
-                  <div
-                    className={`mx-3 h-px w-10 sm:w-14 transition-colors duration-500 ${
-                      isComplete ? "bg-cyan-400/60" : "bg-zinc-800"
-                    }`}
+    <div className="mx-auto max-w-4xl">
+      <Card className="overflow-hidden border-zinc-800 bg-zinc-900/40">
+        <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-zinc-800 pb-4">
+          <div>
+            <p className="text-sm font-semibold text-zinc-100">Criar animação</p>
+            <p className="mt-0.5 text-xs text-zinc-500">Personalize e exporte sua waveform</p>
+          </div>
+          {audioFile && (
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-cyan-400/20 bg-cyan-950/20 text-cyan-400"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+              {audioFile.name} · {(audioFile.size / (1024 * 1024)).toFixed(1)} MB
+            </Badge>
+          )}
+        </CardHeader>
+
+        <Tabs value={STEP_KEYS[step]} onValueChange={handleTabChange}>
+          <div className="border-b border-zinc-800 px-6">
+            <TabsList className="h-auto gap-0 rounded-none bg-transparent p-0">
+              {STEP_KEYS.map((key, index) => (
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  disabled={index > step}
+                  className="gap-2 rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-zinc-500 data-[state=active]:border-cyan-400 data-[state=active]:bg-transparent data-[state=active]:text-cyan-400 disabled:opacity-40"
+                >
+                  <StepIndicator
+                    index={index}
+                    isComplete={index < step}
+                    isActive={index === step}
                   />
-                )}
+                  {STEP_LABELS[key]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-                <div className="flex flex-col items-center gap-2">
-                  <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 ${
-                      isComplete
-                        ? "border-cyan-400 bg-cyan-400 text-zinc-950 shadow-[0_0_12px_rgba(34,211,238,0.3)]"
-                        : isActive
-                          ? "border-cyan-400/50 bg-cyan-950/30 text-cyan-300 ring-2 ring-cyan-400/15"
-                          : "border-zinc-800 bg-zinc-900/40 text-zinc-600"
-                    }`}
-                  >
-                    {isComplete ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <Icon active={isActive} />
-                    )}
-                  </div>
-                  <span
-                    className={`text-xs font-medium tracking-wide transition-colors duration-300 ${
-                      isActive ? "text-zinc-100" : isComplete ? "text-zinc-400" : "text-zinc-600"
-                    }`}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </nav>
+          <CardContent className="p-0">
+            <TabsContent value="upload" className="m-0 p-6 focus-visible:outline-none">
+              <StepUpload onFileSelected={handleFileSelected} />
+            </TabsContent>
+            <TabsContent value="customize" className="m-0 p-6 focus-visible:outline-none">
+              {audioFile && (
+                <StepCustomize
+                  config={config}
+                  onChange={setConfig}
+                  onNext={() => setStep(2)}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="export" className="m-0 p-6 focus-visible:outline-none">
+              {audioFile && (
+                <StepExport
+                  audioFile={audioFile}
+                  config={config}
+                  onRestart={handleRestart}
+                />
+              )}
+            </TabsContent>
+          </CardContent>
+        </Tabs>
 
-      {/* Step content with fade-in transition */}
-      <div className="relative">
-        {step === 0 && <StepUpload onFileSelected={handleFileSelected} />}
-        {step === 1 && audioFile && (
-          <StepCustomize
-            audioFile={audioFile}
-            config={config}
-            onChange={setConfig}
-            onNext={() => setStep(2)}
-          />
-        )}
-        {step === 2 && audioFile && (
-          <StepExport audioFile={audioFile} config={config} onRestart={handleRestart} />
-        )}
-      </div>
+        <CardFooter className="flex items-center justify-between border-t border-zinc-800 px-6 py-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setStep(Math.max(0, step - 1))}
+            disabled={step === 0}
+            className="text-zinc-500 hover:bg-transparent hover:text-zinc-300"
+          >
+            ← Voltar
+          </Button>
+          <span className="text-xs text-zinc-600">Step {step + 1} de 3</span>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

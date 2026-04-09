@@ -32,7 +32,7 @@ const BG_PRESETS = [
 ]
 
 interface Props {
-  audioFile: File
+  audioFile?: File
   config: EditorConfig
   onChange: (config: EditorConfig) => void
   onNext: () => void
