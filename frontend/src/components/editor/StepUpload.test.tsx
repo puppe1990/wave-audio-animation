@@ -8,6 +8,11 @@ describe("StepUpload", () => {
     expect(screen.getByText(/arraste/i)).toBeTruthy()
   })
 
+  it('renders a button named "Escolher arquivo"', () => {
+    render(<StepUpload onFileSelected={vi.fn()} />)
+    expect(screen.getByRole("button", { name: /escolher arquivo/i })).toBeTruthy()
+  })
+
   it("shows error for unsupported format", () => {
     render(<StepUpload onFileSelected={vi.fn()} />)
     const input = document.querySelector("input[type=file]") as HTMLInputElement
