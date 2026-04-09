@@ -2,6 +2,10 @@
 
 Monorepo com frontend em Next.js e backend em FastAPI para gerar animacoes de audio.
 
+## Preview
+
+![Preview do editor com redesign shadcn](docs/images/wizard-shadcn-preview.png)
+
 ## Desenvolvimento
 
 Na raiz do projeto:
